@@ -18,7 +18,7 @@ function App() {
         <div>
           <h1>Get started</h1>
           <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+            Hi my name is max and this is some new text!
           </p>
         </div>
         <button
