@@ -10,12 +10,12 @@ const users = {
   users_list: [
     {
       id: "xyz789",
-      name: "Charlie",
+      name: "Max",
       job: "Janitor",
     },
     {
       id: "abc123",
-      name: "Mac",
+      name: "Max",
       job: "Bouncer",
     },
     {
