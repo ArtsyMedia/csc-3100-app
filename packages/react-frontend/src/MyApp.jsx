@@ -7,10 +7,24 @@ function MyApp() {
     const [characters, setCharacters] = useState([]);
 
     function removeOneCharacter(index) {
-        const updated = characters.filter((character, i) => {
-            return i !== index;
+        const character = characters[index];
+
+        fetch(`http://localhost:8000/users/${character.id}`, {
+            method: "DELETE",
+        }).then((res) => {
+            if (res.status === 404) {
+                throw new Error("User not found");
+            }
+            if (res.status !== 204) {
+                throw new Error(`DELETE failed with status ${res.status}`);
+            }
+
+            setCharacters((currentCharacters) =>
+                currentCharacters.filter((_, i) => i !== index)
+            );
+        }).catch((error) => {
+            console.log(error);
         });
-        setCharacters(updated);
     }
 
     function fetchUsers() {
