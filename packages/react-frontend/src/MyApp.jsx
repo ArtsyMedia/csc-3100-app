@@ -1,5 +1,5 @@
 // src/MyApp.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "./Table";
 import Form from "./Form";
 
@@ -17,10 +17,15 @@ function MyApp() {
         setCharacters([...characters, person]);
     }
 
+    function fetchUsers() {
+        const promise = fetch("http://localhost:8000/users");
+        return promise;
+    }
+
     return (
         <div className="container">
             <Table characterData={characters} removeCharacter={removeOneCharacter} />
-            <Form handleSubmit={updateList}/>
+            <Form handleSubmit={updateList} />
         </div>
     );
 }
