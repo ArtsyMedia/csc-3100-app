@@ -22,6 +22,15 @@ function MyApp() {
         return promise;
     }
 
+    useEffect(() => {
+        fetchUsers()
+            .then((res) => res.json())
+            .then((json) => setCharacters(json["users_list"]))
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
+
     return (
         <div className="container">
             <Table characterData={characters} removeCharacter={removeOneCharacter} />
