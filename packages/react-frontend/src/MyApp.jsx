@@ -45,9 +45,11 @@ function MyApp() {
                 if (res.status !== 201) {
                     throw new Error(`POST failed with status ${res.status}`);
                 }
-                return res;
+                return res.json();
             })
-            .then(() => setCharacters((currentCharacters) => [...currentCharacters, person]))
+            .then((newUser) =>
+                setCharacters((currentCharacters) => [...currentCharacters, newUser])
+            )
             .catch((error) => {
                 console.log(error);
             });
