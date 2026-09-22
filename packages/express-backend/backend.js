@@ -10,9 +10,14 @@ dotenv.config();
 const { MONGO_CONNECTION_STRING } = process.env;
 
 mongoose.set("debug", true);
-mongoose
-  .connect(MONGO_CONNECTION_STRING + "users") // connect to Db "users"
-  .catch((error) => console.log(error));
+const mongoUri = MONGO_CONNECTION_STRING + "users";
+
+// Reuse the existing default connection instead of opening it more than once.
+if (mongoose.connection.readyState === 0) {
+    mongoose
+        .connect(mongoUri) // connect to Db "users"
+        .catch((error) => console.log(error));
+}
 
 const app = express();
 const port = 8000;
@@ -28,19 +33,9 @@ app.get("/users", (req, res) => {
     const name = req.query.name;
     const job = req.query.job;
 
-    if (name != undefined && job != undefined) {
-        userService.findUsersByNameAndJob(name, job)
-            .then((result) => res.send({ users_list: result }))
-            .catch((error) => res.status(500).send(error));
-    } else if (name != undefined) {
-        userService.findUserByName(name)
-            .then((result) => res.send({ users_list: result }))
-            .catch((error) => res.status(500).send(error));
-    } else {
-        userService.getUsers()
-            .then((result) => res.send({ users_list: result }))
-            .catch((error) => res.status(500).send(error));
-    }
+    userService.getUsers(name, job)
+        .then((result) => res.send({ users_list: result }))
+        .catch((error) => res.status(500).send(error));
 });
 
 
@@ -50,7 +45,7 @@ app.get("/users/:id", (req, res) => {
     const id = req.params["id"]; //or req.params.id
     userService.findUserById(id)
         .then((result) => {
-            if (result === undefined) {
+            if (!result) {
                 res.status(404).send("Resource not found.");
             } else {
                 res.send(result);
@@ -69,9 +64,6 @@ app.post("/users", (req, res) => {
 });
 
 app.delete("/users/:id", (req, res) => {
-    if (typeof userService.deleteUser !== "function") {
-        return res.status(501).send("User deletion is not supported.");
-    }
     userService.deleteUser(req.params.id)
         .then((result) => {
             if (!result) {

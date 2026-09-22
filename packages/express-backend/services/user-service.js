@@ -6,8 +6,7 @@ mongoose.set("debug", true);
 dotenv.config();
 
 function getMongoURI(dbname) {
-  // Pull the single connection string from the environment
-  const connection_string = process.env.MONGO_CONNECTION_STRING;
+  const connection_string = process.env.MONGO_CONNECTION_STRING?.trim();
 
   if (!connection_string) {
     console.error(
@@ -16,15 +15,8 @@ function getMongoURI(dbname) {
     return "";
   }
 
-  // Ensure there is exactly one slash between the URI and the dbname
-  const baseURI = connection_string.endsWith("/")
-    ? connection_string
-    : `${connection_string}/`;
-
-  const finalURI = `${baseURI}${dbname}?retryWrites=true&w=majority`;
-
-  console.log("Connecting to MongoDB database:", dbname);
-  return finalURI;
+  console.log("Connecting to MongoDB with the configured connection string");
+  return connection_string;
 }
 
 // Mongoose 6+ does not need useNewUrlParser or useUnifiedTopology
@@ -70,11 +62,15 @@ function removeUser(id) {
   return userModel.findByIdAndDelete(id);
 }
 
+const deleteUser = removeUser;
+
 export default {
   addUser,
   getUsers,
   findUserById,
   findUserByName,
   findUserByJob,
-  removeUser
+  findUserByNameAndJob,
+  removeUser,
+  deleteUser
 };
